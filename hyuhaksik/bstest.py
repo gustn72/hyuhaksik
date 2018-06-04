@@ -25,12 +25,13 @@ def MakeCrawl():
     Modify = re.compile('[\t\n\r\f\v]')
     for cafeteria_name in site_dic:
         soup = MakeSoup(cafeteria_name)
-        menulist = soup.find_all('h3')
-        temp = []
-
+        MenuList = soup.find_all('h3')
+        PriceList=soup.body.find_all('p',class_='price')
         CafeInfo = soup.body.find('pre')
+
+        temp = []
         CafeInfoStr = Modify.sub('',CafeInfo.text)
-        for menus in menulist:
+        for menus in MenuList:
             # result = hangul.sub('', s) #한글만 선택
             s = Modify.sub('',menus.text) #메뉴를 가져온다음 공백을 없앰
             temp.append(s)
@@ -45,7 +46,15 @@ def MakeCrawl():
                     temp[1] = '[점심] ' + temp[1]
                     temp[2] = '[저녁] ' + temp[2]
             temp[0]=CafeInfoStr # 0에는 식당 이름이 들어있어서 없앰
-            json.dump(temp, json_file)
+            if len(PriceList)==len(MenuList)-1:
+                for i in range(len(PriceList)):
+                    temp[i+1]=temp[i+1]+PriceList[i].text
+
+            #json.dump(temp, json_file)
+            print(cafeteria_name + 'start')
+            for tempcon in temp:
+                print(tempcon)
+
             print(cafeteria_name +'is Writed')
 #식당위치
 #tab = soup.body.find('div',class_='tab-content')
@@ -75,13 +84,13 @@ if __name__== '__main__':
     MakeCrawl()
     # for cafeteria_name in site_dic:
     #     soup = MakeSoup(cafeteria_name)
-    #     pricelist = soup.find_all('p',class_="price")
-    #     menulist = soup.find_all('h3')
+    #     PriceList = soup.find_all('p',class_="price")
+    #     MenuList = soup.find_all('h3')
     #     Modify = re.compile('[\t\n\r\f\v]')
-    #     del menulist[0]
-    #     print(cafeteria_name,len(menulist),len(pricelist))
-    #     for i in range(0,len(menulist)):
-    #         menus = menulist[i]
-    #         prices = pricelist[i]
+    #     del MenuList[0]
+    #     print(cafeteria_name,len(MenuList),len(PriceList))
+    #     for i in range(0,len(MenuList)):
+    #         menus = MenuList[i]
+    #         prices = PriceList[i]
     #         s = Modify.sub('',menus.text)
     #         print(s,prices.text)
